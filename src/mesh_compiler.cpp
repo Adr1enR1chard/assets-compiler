@@ -3,12 +3,12 @@
 
 void CompileMesh(const aiMesh *mesh, const char *outputPath)
 {
-    std::vector<Vertex> vertices;
+    std::vector<VertexLayout> vertices;
     std::vector<unsigned int> indices;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
-        Vertex vertex;
+        VertexLayout vertex;
         vertex.position[0] = mesh->mVertices[i].x;
         vertex.position[1] = mesh->mVertices[i].y;
         vertex.position[2] = mesh->mVertices[i].z;
@@ -55,7 +55,7 @@ void CompileMesh(const aiMesh *mesh, const char *outputPath)
         static_cast<uint32_t>(indices.size())};
 
     fwrite(&header, sizeof(header), 1, outputFile);
-    fwrite(vertices.data(), sizeof(Vertex), vertices.size(), outputFile);
+    fwrite(vertices.data(), sizeof(VertexLayout), vertices.size(), outputFile);
     fwrite(indices.data(), sizeof(unsigned int), indices.size(), outputFile);
     fclose(outputFile);
 }

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <assimp/scene.h>
 
-struct Vertex
+struct VertexLayout
 {
     float position[3];
     float normal[3];

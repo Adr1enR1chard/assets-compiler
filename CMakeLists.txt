@@ -15,13 +15,16 @@ add_executable(AssetCompiler
     src/texture_compiler.cpp
     src/mesh_compiler.cpp
     src/model_compiler.cpp
-    src/third_party/stb_image/stb_image.cpp
+    src/include/stb_image/stb_image.cpp
 )
 
-target_include_directories(AssetCompiler PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/utils
+target_include_directories(AssetCompiler 
+PUBLIC
     ${CMAKE_SOURCE_DIR}/include
+PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/include
+    ${CMAKE_SOURCE_DIR}/src/utils
 )
 
 
