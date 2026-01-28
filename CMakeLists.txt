@@ -29,7 +29,10 @@ FetchContent_MakeAvailable(assimp)
 ####################
 #### Libraries 
 ####################
-
+add_library(AssetsLoader INTERFACE)
+target_include_directories(AssetsLoader INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/loader/include
+)
 
 ####################
 #### Executables
