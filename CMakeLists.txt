@@ -10,25 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(AssetsCompiler
-    src/main.cpp
-    src/texture_compiler.cpp
-    src/mesh_compiler.cpp
-    src/model_compiler.cpp
-    src/include/stb_image/stb_image.cpp
-)
-
-target_include_directories(AssetsCompiler 
-PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/include
-    ${CMAKE_SOURCE_DIR}/src/utils
-)
-
-
+### Fetch Assimp ###
 include(FetchContent)
 FetchContent_Declare(assimp
     GIT_REPOSITORY https://github.com/assimp/assimp.git
@@ -39,6 +21,27 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(assimp)
+
+# ### Create Loader Library ###
+add_library(AssetsLoader INTERFACE)
+target_include_directories(AssetsLoader INTERFACE
+    ${CMAKE_SOURCE_DIR}/loader/src
+)
+
+### Create Compiler Executable ###
+add_executable(AssetsCompiler
+    compiler/src/main.cpp
+    compiler/src/texture_compiler.cpp
+    compiler/src/mesh_compiler.cpp
+    compiler/src/model_compiler.cpp
+    compiler/include/stb_image/stb_image.cpp
+)
+
+target_include_directories(AssetsCompiler 
+PRIVATE
+    ${CMAKE_SOURCE_DIR}/compiler/src
+    ${CMAKE_SOURCE_DIR}/compiler/include
+)
 
 target_link_libraries(AssetsCompiler PUBLIC
     assimp::assimp
