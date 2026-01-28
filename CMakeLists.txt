@@ -23,12 +23,7 @@ target_include_directories(AssetCompiler PRIVATE
     ${CMAKE_SOURCE_DIR}/src/utils
     ${CMAKE_SOURCE_DIR}/include
 )
-# Call the texture compiler after building the AssetCompiler executable
-add_custom_command(
-    TARGET AssetCompiler POST_BUILD
-    COMMAND AssetCompiler ${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
-    COMMENT "Running AssetCompiler to process assets..."
-)
+
 
 include(FetchContent)
 FetchContent_Declare(assimp
@@ -43,4 +38,12 @@ FetchContent_MakeAvailable(assimp)
 
 target_link_libraries(AssetCompiler PUBLIC
     assimp::assimp
+)
+
+enable_testing()
+
+add_test(
+    TARGET AssetCompiler POST_BUILD
+    COMMAND AssetCompiler ${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
+    COMMENT "Running AssetCompiler to process assets..."
 )
