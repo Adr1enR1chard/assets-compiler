@@ -10,7 +10,11 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-### Fetch Assimp ###
+###################
+#### Dependencies 
+###################
+
+#### Assimp ####
 include(FetchContent)
 FetchContent_Declare(assimp
     GIT_REPOSITORY https://github.com/assimp/assimp.git
@@ -22,13 +26,19 @@ set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(assimp)
 
-# ### Create Loader Library ###
+####################
+#### Libraries 
+####################
+
+#### Loader
 add_library(AssetsLoader INTERFACE)
 target_include_directories(AssetsLoader INTERFACE
     ${CMAKE_SOURCE_DIR}/loader/src
 )
 
-### Create Compiler Executable ###
+####################
+#### Executables
+####################
 add_executable(AssetsCompiler
     compiler/src/main.cpp
     compiler/src/texture_compiler.cpp
@@ -47,10 +57,13 @@ target_link_libraries(AssetsCompiler PUBLIC
     assimp::assimp
 )
 
+####################
+#### Testing
+####################
+
 enable_testing()
 
 add_test(
-    TARGET AssetsCompiler POST_BUILD
+    NAME AssetsCompilerTest
     COMMAND AssetsCompiler ${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
-    COMMENT "Running AssetsCompiler to process assets..."
 )
