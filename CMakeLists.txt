@@ -29,15 +29,15 @@ FetchContent_MakeAvailable(assimp)
 ####################
 #### Libraries 
 ####################
-# add_library(assets_compiler INTERFACE)
-# target_include_directories(assets_compiler INTERFACE
-#     ${CMAKE_CURRENT_SOURCE_DIR}/include
-# )
+add_library(assets_loader INTERFACE)
+target_include_directories(assets_loader INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 ####################
 #### Executables
 ####################
-add_executable(assets_compiler
+add_executable(AssetsCompiler
     compiler/src/main.cpp
     compiler/src/texture_compiler.cpp
     compiler/src/mesh_compiler.cpp
@@ -45,15 +45,13 @@ add_executable(assets_compiler
     compiler/include/stb_image/stb_image.cpp
 )
 
-target_include_directories(assets_compiler 
-PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+target_include_directories(AssetsCompiler 
 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/compiler/src
     ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include
 )
 
-target_link_libraries(assets_compiler PRIVATE
+target_link_libraries(AssetsCompiler PRIVATE
     assimp::assimp
 )
 
@@ -66,6 +64,6 @@ if (PROJECT_IS_TOP_LEVEL)
 
     add_test(
         NAME assets_compiler_test
-        COMMAND assets_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
+        COMMAND AssetsCompiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
     )
 endif()
