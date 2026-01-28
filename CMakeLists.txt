@@ -44,8 +44,8 @@ add_executable(AssetsCompiler
 
 target_include_directories(AssetsCompiler 
 PRIVATE
-    ${CMAKE_SOURCE_DIR}/compiler/src
-    ${CMAKE_SOURCE_DIR}/compiler/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/compiler/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include
 )
 
 target_link_libraries(AssetsCompiler PRIVATE
@@ -56,9 +56,11 @@ target_link_libraries(AssetsCompiler PRIVATE
 #### Testing
 ####################
 
-enable_testing()
+if (PROJECT_IS_TOP_LEVEL)
+    enable_testing()
 
-add_test(
-    NAME AssetsCompilerTest
-    COMMAND AssetsCompiler ${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
-)
+    add_test(
+        NAME AssetsCompilerTest
+        COMMAND AssetsCompiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
+    )
+endif()
