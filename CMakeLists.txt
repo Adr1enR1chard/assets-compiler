@@ -29,10 +29,10 @@ FetchContent_MakeAvailable(assimp)
 ####################
 #### Libraries 
 ####################
-add_library(assets_loader INTERFACE)
-target_include_directories(assets_loader INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/loader/include
-)
+# add_library(assets_compiler INTERFACE)
+# target_include_directories(assets_compiler INTERFACE
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include
+# )
 
 ####################
 #### Executables
@@ -46,6 +46,8 @@ add_executable(assets_compiler
 )
 
 target_include_directories(assets_compiler 
+PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/compiler/src
     ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include
