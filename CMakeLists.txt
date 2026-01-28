@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_executable(AssetCompiler
+add_executable(AssetsCompiler
     src/main.cpp
     src/texture_compiler.cpp
     src/mesh_compiler.cpp
@@ -18,7 +18,7 @@ add_executable(AssetCompiler
     src/include/stb_image/stb_image.cpp
 )
 
-target_include_directories(AssetCompiler 
+target_include_directories(AssetsCompiler 
 PUBLIC
     ${CMAKE_SOURCE_DIR}/include
 PRIVATE
@@ -39,14 +39,14 @@ set(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(assimp)
 
-target_link_libraries(AssetCompiler PUBLIC
+target_link_libraries(AssetsCompiler PUBLIC
     assimp::assimp
 )
 
 enable_testing()
 
 add_test(
-    TARGET AssetCompiler POST_BUILD
-    COMMAND AssetCompiler ${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
-    COMMENT "Running AssetCompiler to process assets..."
+    TARGET AssetsCompiler POST_BUILD
+    COMMAND AssetsCompiler ${CMAKE_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
+    COMMENT "Running AssetsCompiler to process assets..."
 )
