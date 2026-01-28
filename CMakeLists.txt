@@ -48,7 +48,7 @@ add_executable(AssetsCompiler
 )
 
 target_include_directories(AssetsCompiler 
-PRIVATE
+PUBLIC
     ${CMAKE_SOURCE_DIR}/compiler/src
     ${CMAKE_SOURCE_DIR}/compiler/include
 )
