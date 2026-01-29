@@ -2,7 +2,7 @@
 #include <iostream>
 #include <assets_format/format_validator.hpp>
 
-bool TextureLoader::LoadTexture(const std::string &filePath, int &width, int &height, int &channels, std::vector<unsigned char> &data)
+bool TextureLoader::LoadTexture(const std::string &filePath, unsigned int &width, unsigned int &height, unsigned int &channels, std::vector<unsigned char> &data)
 {
     FILE *file = fopen(filePath.c_str(), "rb");
     if (!file)
@@ -24,7 +24,7 @@ bool TextureLoader::LoadTexture(const std::string &filePath, int &width, int &he
     height = header.height;
     channels = header.channels;
 
-    size_t dataSize = width * height * channels;
+    unsigned int dataSize = width * height * channels;
     data.resize(dataSize);
 
     fread(data.data(), 1, dataSize, file);

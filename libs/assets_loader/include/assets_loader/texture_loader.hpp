@@ -8,5 +8,5 @@
 class TextureLoader
 {
 public:
-    static bool LoadTexture(const std::string &filePath, int &width, int &height, int &channels, std::vector<unsigned char> &data);
+    static bool LoadTexture(const std::string &filePath, unsigned int &width, unsigned int &height, unsigned int &channels, std::vector<unsigned char> &data);
 };
