@@ -39,7 +39,6 @@ int main(int argc, char **argv)
 
             std::filesystem::path relativePath = std::filesystem::relative(filePath, sourceDir);
             std::filesystem::path outputPath = std::filesystem::path(destDir) / relativePath;
-            outputPath += ".asset";
             std::filesystem::create_directories(outputPath.parent_path());
 
             switch (assetType)

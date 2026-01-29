@@ -7,6 +7,7 @@
 
 void CompileTexture(const char *inputPath, const char *outputPath)
 {
+    std::string assetPath = get_texture_path(std::string(outputPath));
     int width, height, channels;
     unsigned char *data = stbi_load(inputPath, &width, &height, &channels, 0);
     if (!data)
@@ -16,10 +17,10 @@ void CompileTexture(const char *inputPath, const char *outputPath)
     }
 
     // Simple example: just write width, height, channels as binary data
-    FILE *outputFile = fopen(outputPath, "wb");
+    FILE *outputFile = fopen(assetPath.c_str(), "wb");
     if (!outputFile)
     {
-        std::cerr << "Failed to open output file: " << outputPath << std::endl;
+        std::cerr << "Failed to open output file: " << assetPath << std::endl;
         stbi_image_free(data);
         return;
     }
@@ -38,5 +39,5 @@ void CompileTexture(const char *inputPath, const char *outputPath)
     fclose(outputFile);
     stbi_image_free(data);
 
-    std::cout << "Compiled texture saved to: " << outputPath << std::endl;
+    std::cout << "Compiled texture saved to: " << assetPath << std::endl;
 }

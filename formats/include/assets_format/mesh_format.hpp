@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 struct VertexLayout
 {
@@ -17,3 +18,8 @@ struct MeshHeader
     uint32_t vertexCount;
     uint32_t indexCount;
 };
+
+inline std::string get_mesh_path(const std::string &basePath)
+{
+    return basePath + ".asset";
+}

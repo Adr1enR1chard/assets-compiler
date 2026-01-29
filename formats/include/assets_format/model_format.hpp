@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 struct ModelMesh
 {
@@ -23,3 +24,13 @@ struct ModelHeader
     uint32_t meshCount;
     uint32_t materialCount;
 };
+
+inline std::string get_model_path(const std::string &basePath)
+{
+    return basePath + ".asset";
+}
+
+inline std::string get_submesh_path(const std::string &basePath, int meshIndex)
+{
+    return basePath + "_mesh" + std::to_string(meshIndex);
+}

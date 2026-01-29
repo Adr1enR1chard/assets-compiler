@@ -44,10 +44,11 @@ void CompileMesh(const aiMesh *mesh, const char *outputPath)
             indices.push_back(face.mIndices[j]);
     }
 
-    FILE *outputFile = fopen(outputPath, "wb");
+    std::string meshPath = get_mesh_path(std::string(outputPath));
+    FILE *outputFile = fopen(meshPath.c_str(), "wb");
     if (!outputFile)
     {
-        std::cerr << "Failed to open output file: " << outputPath << std::endl;
+        std::cerr << "Failed to open output file: " << meshPath << std::endl;
         return;
     }
 

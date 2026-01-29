@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 struct TextureHeader
 {
@@ -10,3 +11,8 @@ struct TextureHeader
     uint32_t channels;
     uint32_t mipLevels; // 1 for now
 };
+
+inline std::string get_texture_path(const std::string &basePath)
+{
+    return basePath + ".asset";
+}

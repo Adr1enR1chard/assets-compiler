@@ -42,8 +42,9 @@ void CompileModel(const char *inputPath, const char *outputPath)
         return;
     }
 
+    std::string modelPath = get_model_path(std::string(outputPath));
     int meshCounter = 0;
-    ProcessNode(scene->mRootNode, scene, glm::mat4(1.0f), outputPath, meshCounter);
+    ProcessNode(scene->mRootNode, scene, glm::mat4(1.0f), modelPath.c_str(), meshCounter);
 
     ModelHeader header{
         0x4C444F4D, // 'MODL0'
@@ -51,10 +52,10 @@ void CompileModel(const char *inputPath, const char *outputPath)
         0 // materialCount placeholder
     };
 
-    FILE *outputFile = fopen(outputPath, "wb");
+    FILE *outputFile = fopen(modelPath.c_str(), "wb");
     if (!outputFile)
     {
-        std::cerr << "Failed to open output file for header writing: " << outputPath << std::endl;
+        std::cerr << "Failed to open output file for header writing: " << modelPath << std::endl;
         return;
     }
     fwrite(&header, sizeof(header), 1, outputFile);
@@ -81,7 +82,7 @@ void ProcessNode(const aiNode *node, const aiScene *scene, const glm::mat4 &pare
 
 void ProcessMesh(const aiMesh *mesh, const aiScene *scene, const glm::mat4 &transform, const char *outputPath, int meshIndex)
 {
-    std::string meshPath = (std::string(outputPath) + "." + (std::string("mesh_") + std::to_string(meshIndex) + ".asset"));
+    std::string meshPath = get_submesh_path(std::string(outputPath), meshIndex);
 
     CompileMesh(mesh, meshPath.c_str());
     std::cout << "Processed mesh with " << mesh->mNumVertices << " vertices at " << meshPath << std::endl;

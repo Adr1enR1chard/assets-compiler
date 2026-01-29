@@ -40,6 +40,8 @@ target_include_directories(assets_format INTERFACE
 # Assets Loader (header-only)
 add_library(assets_loader 
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/src/texture_loader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/src/mesh_loader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/src/model_loader.cpp
 )
 target_include_directories(assets_loader PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/include
@@ -87,12 +89,32 @@ target_include_directories(assets_compiler
         ${CMAKE_CURRENT_SOURCE_DIR}/tools/assets_compiler/include
 )
 
-
 if (PROJECT_IS_TOP_LEVEL)
+    add_executable(
+        assets_loader_test
+        test/main.cpp
+    )
+    target_link_libraries(
+        assets_loader_test
+        PRIVATE
+            assets_loader
+            thirdparty_glm
+            thirdparty_stb
+    )
+    set_target_properties(assets_loader_test PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests_bin
+    )
+
     enable_testing()
 
     add_test(
         NAME assets_compiler_test
-        COMMAND assets_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_SOURCE_BINARY_DIR}/compiled_assets
+        COMMAND assets_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test "$<TARGET_FILE_DIR:assets_loader_test>/assets"
+    )
+
+    add_test(
+        NAME assets_loader_test
+        COMMAND assets_loader_test
+        WORKING_DIRECTORY $<TARGET_FILE_DIR:assets_loader_test>
     )
 endif()
