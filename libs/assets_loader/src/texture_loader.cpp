@@ -4,7 +4,7 @@
 
 bool TextureLoader::LoadTexture(const std::string &filePath, unsigned int &width, unsigned int &height, unsigned int &channels, std::vector<unsigned char> &data)
 {
-    FILE *file = fopen(filePath.c_str(), "rb");
+    FILE *file = fopen((filePath + ".asset").c_str(), "rb");
     if (!file)
     {
         std::cerr << "Failed to open texture file: " << filePath << std::endl;
