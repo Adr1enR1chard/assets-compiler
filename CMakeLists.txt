@@ -10,6 +10,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
+
 ###################
 #### Dependencies 
 ###################
@@ -34,36 +35,52 @@ target_include_directories(assets_loader INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
+# GLM (header-only)
+add_library(thirdparty_glm INTERFACE)
+
+target_include_directories(thirdparty_glm
+    INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/third_party
+)
+
+# stb_image
+add_library(thirdparty_stb 
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/stb_image/stb_image.cpp
+)
+
+target_include_directories(thirdparty_stb
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/third_party
+)
+
 ####################
 #### Executables
 ####################
-add_executable(AssetsCompiler
-    compiler/src/main.cpp
-    compiler/src/texture_compiler.cpp
-    compiler/src/mesh_compiler.cpp
-    compiler/src/model_compiler.cpp
-    compiler/include/stb_image/stb_image.cpp
+add_executable(asset_compiler
+    tools/assets_compiler/src/main.cpp
+    tools/assets_compiler/src/mesh_compiler.cpp
+    tools/assets_compiler/src/texture_compiler.cpp
+    tools/assets_compiler/src/model_compiler.cpp
 )
 
-target_include_directories(AssetsCompiler 
-PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/compiler/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/compiler/include
+target_link_libraries(asset_compiler
+    PRIVATE
+        thirdparty_glm
+        thirdparty_stb
+        assimp::assimp
 )
 
-target_link_libraries(AssetsCompiler PRIVATE
-    assimp::assimp
+target_include_directories(asset_compiler
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/assets_compiler/include
 )
 
-####################
-#### Testing
-####################
 
 if (PROJECT_IS_TOP_LEVEL)
     enable_testing()
 
     add_test(
         NAME assets_compiler_test
-        COMMAND AssetsCompiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_BINARY_DIR}/compiled_assets
+        COMMAND asset_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_SOURCE_BINARY_DIR}/compiled_assets
     )
 endif()
