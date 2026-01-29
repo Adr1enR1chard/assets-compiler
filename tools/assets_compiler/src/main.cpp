@@ -26,8 +26,18 @@ int main(int argc, char **argv)
     std::cout << "Destination Directory: " << destDir << std::endl;
     std::cout << "Starting asset processing..." << std::endl;
 
+    // if relative path, make absolute
+    std::filesystem::path sourcePath = std::filesystem::absolute(sourceDir);
+    std::filesystem::path destPath = std::filesystem::absolute(destDir);
+
+    if (!std::filesystem::exists(sourcePath) || !std::filesystem::is_directory(sourcePath))
+    {
+        std::cerr << "Source directory does not exist or is not a directory: " << sourcePath << std::endl;
+        return 1;
+    }
+
     // Iterate through the source directory, process each asset file, and save the optimized version to the destination directory
-    for (const auto &entry : std::filesystem::recursive_directory_iterator(sourceDir))
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(sourcePath))
     {
         if (entry.is_regular_file() && entry.path().has_extension())
         {
@@ -37,9 +47,16 @@ int main(int argc, char **argv)
             if (assetType == AssetType::Unknown)
                 continue;
 
-            std::filesystem::path relativePath = std::filesystem::relative(filePath, sourceDir);
-            std::filesystem::path outputPath = std::filesystem::path(destDir) / relativePath;
+            std::filesystem::path relativePath = std::filesystem::relative(filePath, sourcePath);
+            std::filesystem::path outputPath = destPath / relativePath;
             std::filesystem::create_directories(outputPath.parent_path());
+
+            FILE *outputFile = fopen((outputPath.string() + ".asset").c_str(), "wb");
+            if (!outputFile)
+            {
+                std::cerr << "Failed to open output file: " << outputPath << std::endl;
+                continue;
+            }
 
             switch (assetType)
             {
@@ -47,12 +64,12 @@ int main(int argc, char **argv)
                 // Ensure the output directory exists
 
                 // Compile the texture
-                CompileTexture(filePath.string().c_str(), outputPath.string().c_str());
+                CompileTexture(filePath.string().c_str(), outputFile);
                 std::cout << "Compiled texture: " << filePath << " -> " << outputPath << std::endl;
                 break;
 
             case AssetType::Model:
-                CompileModel(filePath.string().c_str(), outputPath.string().c_str());
+                CompileModel(filePath.string().c_str(), outputFile);
                 std::cout << "Compiled model: " << filePath << " -> " << outputPath << std::endl;
                 break;
 
@@ -60,6 +77,8 @@ int main(int argc, char **argv)
                 std::cout << "Unsupported asset type for file: " << filePath << std::endl;
                 break;
             }
+
+            fclose(outputFile);
         }
     }
 

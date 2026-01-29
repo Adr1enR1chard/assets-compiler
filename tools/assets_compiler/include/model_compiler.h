@@ -1,13 +1,18 @@
 #pragma once
 
+#include <stdio.h>
 #include <glm/glm.hpp>
 #include <assimp/scene.h>
+#include <assets_format/model_format.hpp>
 
-void CompileModel(const char *inputPath, const char *outputPath);
+void CompileModel(const char *inputPath, FILE *outputFile);
 
-void ProcessNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, const char *outputPath, int &meshCounter);
+void CompileMesh(std::vector<VertexLayout> &vertices, std::vector<unsigned int> &indices, FILE *outputFile);
 
-void ProcessMesh(const aiMesh *mesh, const aiScene *scene, const glm::mat4 &transform, const char *outputPath, int meshIndex);
+void CompileMaterial(MaterialDescriptor &outMaterial, FILE *outputFile);
 
-void ProcessMaterial(const aiMaterial *material, const char *outputPath);
-void ProcessTexture(const aiString &texturePath, const char *outputPath);
+void ProcessNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, FILE *outputFile, std::vector<std::vector<VertexLayout>> &meshesVertices, std::vector<std::vector<unsigned int>> &meshesIndices, std::vector<MaterialDescriptor> &materials);
+
+void ProcessMesh(const aiMesh *mesh, const aiScene *scene, const glm::mat4 &transform, std::vector<VertexLayout> &outVertices, std::vector<unsigned int> &outIndices);
+
+void ProcessMaterial(const aiMaterial *material, MaterialDescriptor &outMaterial);

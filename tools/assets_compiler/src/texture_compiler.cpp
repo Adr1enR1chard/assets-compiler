@@ -5,9 +5,8 @@
 #include <filesystem>
 #include <stb_image/stb_image.h>
 
-void CompileTexture(const char *inputPath, const char *outputPath)
+void CompileTexture(const char *inputPath, FILE *file)
 {
-    std::string assetPath = get_texture_path(std::string(outputPath));
     int width, height, channels;
     unsigned char *data = stbi_load(inputPath, &width, &height, &channels, 0);
     if (!data)
@@ -17,10 +16,9 @@ void CompileTexture(const char *inputPath, const char *outputPath)
     }
 
     // Simple example: just write width, height, channels as binary data
-    FILE *outputFile = fopen(assetPath.c_str(), "wb");
-    if (!outputFile)
+    if (!file)
     {
-        std::cerr << "Failed to open output file: " << assetPath << std::endl;
+        std::cerr << "Invalid output file pointer." << std::endl;
         stbi_image_free(data);
         return;
     }
@@ -33,11 +31,8 @@ void CompileTexture(const char *inputPath, const char *outputPath)
         1 // mipLevels
     };
 
-    fwrite(&header, sizeof(header), 1, outputFile);
-    fwrite(data, sizeof(unsigned char), width * height * channels, outputFile);
+    fwrite(&header, sizeof(header), 1, file);
+    fwrite(data, sizeof(unsigned char), width * height * channels, file);
 
-    fclose(outputFile);
     stbi_image_free(data);
-
-    std::cout << "Compiled texture saved to: " << assetPath << std::endl;
 }

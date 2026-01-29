@@ -40,7 +40,6 @@ target_include_directories(assets_format INTERFACE
 # Assets Loader (header-only)
 add_library(assets_loader 
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/src/texture_loader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/src/mesh_loader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/src/model_loader.cpp
 )
 target_include_directories(assets_loader PUBLIC
@@ -71,7 +70,6 @@ target_include_directories(thirdparty_stb
 ####################
 add_executable(assets_compiler
     tools/assets_compiler/src/main.cpp
-    tools/assets_compiler/src/mesh_compiler.cpp
     tools/assets_compiler/src/texture_compiler.cpp
     tools/assets_compiler/src/model_compiler.cpp
 )
@@ -104,7 +102,7 @@ if (PROJECT_IS_TOP_LEVEL)
     set_target_properties(assets_loader_test PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/tests_bin
     )
-
+    
     enable_testing()
 
     add_test(

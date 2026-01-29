@@ -1,3 +1,5 @@
 #pragma once
 
-void CompileTexture(const char *inputPath, const char *outputPath);
+#include <stdio.h>
+
+void CompileTexture(const char *inputPath, FILE *file);

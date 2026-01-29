@@ -2,7 +2,6 @@
 
 #include <string>
 #include <assets_format/texture_format.hpp>
-#include <assets_format/mesh_format.hpp>
 #include <assets_format/model_format.hpp>
 
 class FormatValidator
@@ -21,5 +20,10 @@ public:
     static bool IsModelHeaderValid(const ModelHeader &header)
     {
         return header.magic == 0x4C444F4D; // 'MODL0'
+    }
+
+    static bool IsMaterialDescriptorValid(const MaterialDescriptor &material)
+    {
+        return material.magic == 0x4C54414D; // 'MATL0'
     }
 };

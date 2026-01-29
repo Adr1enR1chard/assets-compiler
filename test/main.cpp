@@ -1,7 +1,6 @@
 #include <iostream>
 #include <filesystem>
 #include <assets_loader/model_loader.hpp>
-#include <assets_loader/mesh_loader.hpp>
 #include <assets_loader/texture_loader.hpp>
 
 int main()
@@ -45,7 +44,8 @@ int main()
     {
         std::vector<std::vector<VertexLayout>> meshesVertices;
         std::vector<std::vector<unsigned int>> meshesIndices;
-        bool result = ModelLoader::LoadModel("assets/models/sword/scene.gltf", meshesVertices, meshesIndices);
+        std::vector<MaterialDescriptor> materials;
+        bool result = ModelLoader::LoadModel("assets/models/sword/scene.gltf", meshesVertices, meshesIndices, materials);
         if (!result)
         {
             std::cerr << "Failed to load model." << std::endl;
@@ -53,7 +53,7 @@ int main()
         }
         if (meshesVertices.size() != 2 || meshesIndices.size() != 2)
         {
-            std::cerr << "Model meshes count mismatch." << std::endl;
+            std::cerr << "Model meshes count mismatch. Expected 2, got " << meshesVertices.size() << " and " << meshesIndices.size() << std::endl;
             return 1;
         }
         if (meshesVertices[0].size() != 2369 || meshesIndices[0].size() != 9414)
@@ -61,7 +61,15 @@ int main()
             std::cerr << "First mesh data is empty." << std::endl;
             return 1;
         }
+        if (materials.size() != 2)
+        {
+            std::cerr << "Model materials count mismatch. Expected 2, got " << materials.size() << std::endl;
+            return 1;
+        }
+        if (std::string(materials[0].baseColorTexturePath) != "textures/Material-Ancient-Sword_baseColor.png")
+        {
+            std::cerr << "First material base color texture path mismatch. Found " << materials[0].baseColorTexturePath << std::endl;
+            return 1;
+        }
     }
-
-    return 0;
 }

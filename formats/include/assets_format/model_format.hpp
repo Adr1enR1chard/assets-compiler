@@ -3,19 +3,32 @@
 #include <cstdint>
 #include <string>
 
-struct ModelMesh
+struct VertexLayout
 {
-    uint32_t meshHash;
-    uint32_t materialHash;
+    float position[3];
+    float normal[3];
+    float texCoord[2];
+    float tangent[3];
+    float bitangent[3];
 };
 
-struct ModelMaterial
+struct MaterialDescriptor
 {
-    uint32_t baseColorHash;
-    uint32_t metallicHash;
-    uint32_t roughnessHash;
-    uint32_t normalHash;
-    uint32_t aoHash;
+    uint32_t magic; // 'MATL0'
+    char baseColorTexturePath[256] = {0};
+    char metallicTexturePath[256] = {0};
+    char roughnessTexturePath[256] = {0};
+    char normalTexturePath[256] = {0};
+    char aoTexturePath[256] = {0};
+    bool useMetallicRoughnessTexture = false;
+};
+
+struct MeshHeader
+{
+    uint32_t magic; // 'MESH0'
+    uint32_t vertexCount;
+    uint32_t indexCount;
+    uint32_t materialIndex;
 };
 
 struct ModelHeader
@@ -24,13 +37,3 @@ struct ModelHeader
     uint32_t meshCount;
     uint32_t materialCount;
 };
-
-inline std::string get_model_path(const std::string &basePath)
-{
-    return basePath + ".asset";
-}
-
-inline std::string get_submesh_path(const std::string &basePath, int meshIndex)
-{
-    return basePath + "_mesh" + std::to_string(meshIndex);
-}

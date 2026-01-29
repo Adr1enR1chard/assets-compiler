@@ -4,10 +4,11 @@
 
 bool TextureLoader::LoadTexture(const std::string &filePath, unsigned int &width, unsigned int &height, unsigned int &channels, std::vector<unsigned char> &data)
 {
-    FILE *file = fopen(get_texture_path(filePath).c_str(), "rb");
+    std::string texturePath = filePath + ".asset";
+    FILE *file = fopen(texturePath.c_str(), "rb");
     if (!file)
     {
-        std::cerr << "Failed to open texture file: " << filePath << std::endl;
+        std::cerr << "Failed to open texture file: " << texturePath << std::endl;
         return false;
     }
 
@@ -15,7 +16,7 @@ bool TextureLoader::LoadTexture(const std::string &filePath, unsigned int &width
     fread(&header, sizeof(header), 1, file);
     if (!FormatValidator::IsTextureHeaderValid(header))
     {
-        std::cerr << "Invalid texture format: " << filePath << std::endl;
+        std::cerr << "Invalid texture format: " << texturePath << std::endl;
         fclose(file);
         return false;
     }
