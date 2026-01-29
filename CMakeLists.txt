@@ -44,7 +44,7 @@ add_library(assets_loader
 target_include_directories(assets_loader PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/include
 )
-target_link_libraries(assets_loader PRIVATE assets_format)
+target_link_libraries(assets_loader PUBLIC assets_format)
 
 # GLM (header-only)
 add_library(thirdparty_glm INTERFACE)
