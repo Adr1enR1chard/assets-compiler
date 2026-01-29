@@ -1,6 +1,8 @@
 #include "mesh_compiler.h"
 #include <iostream>
 
+#include <assets_format/mesh_format.hpp>
+
 void CompileMesh(const aiMesh *mesh, const char *outputPath)
 {
     std::vector<VertexLayout> vertices;

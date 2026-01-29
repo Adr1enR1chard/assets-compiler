@@ -1,4 +1,5 @@
 #include "texture_compiler.h"
+#include <assets_format/texture_format.hpp>
 
 #include <iostream>
 #include <filesystem>

@@ -1,12 +1,12 @@
 #include "model_compiler.h"
+#include "mesh_compiler.h"
+#include "assets_format/model_format.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
 #include <filesystem>
-
-#include "mesh_compiler.h"
 
 glm::mat4 AiMatrixToGlmMat4(const aiMatrix4x4 &from)
 {

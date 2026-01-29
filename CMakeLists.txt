@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
 
@@ -30,10 +31,20 @@ FetchContent_MakeAvailable(assimp)
 ####################
 #### Libraries 
 ####################
-add_library(assets_loader INTERFACE)
-target_include_directories(assets_loader INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+# Formats
+add_library(assets_format INTERFACE)
+target_include_directories(assets_format INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/formats/include
 )
+
+# Assets Loader (header-only)
+add_library(assets_loader 
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/src/texture_loader.cpp
+)
+target_include_directories(assets_loader PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/assets_loader/include
+)
+target_link_libraries(assets_loader PRIVATE assets_format)
 
 # GLM (header-only)
 add_library(thirdparty_glm INTERFACE)
@@ -56,21 +67,22 @@ target_include_directories(thirdparty_stb
 ####################
 #### Executables
 ####################
-add_executable(asset_compiler
+add_executable(assets_compiler
     tools/assets_compiler/src/main.cpp
     tools/assets_compiler/src/mesh_compiler.cpp
     tools/assets_compiler/src/texture_compiler.cpp
     tools/assets_compiler/src/model_compiler.cpp
 )
 
-target_link_libraries(asset_compiler
+target_link_libraries(assets_compiler
     PRIVATE
+        assets_format
         thirdparty_glm
         thirdparty_stb
         assimp::assimp
 )
 
-target_include_directories(asset_compiler
+target_include_directories(assets_compiler
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/tools/assets_compiler/include
 )
@@ -81,6 +93,6 @@ if (PROJECT_IS_TOP_LEVEL)
 
     add_test(
         NAME assets_compiler_test
-        COMMAND asset_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_SOURCE_BINARY_DIR}/compiled_assets
+        COMMAND assets_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test ${CMAKE_SOURCE_BINARY_DIR}/compiled_assets
     )
 endif()
