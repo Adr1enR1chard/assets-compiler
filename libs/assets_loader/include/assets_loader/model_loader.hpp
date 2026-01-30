@@ -7,9 +7,9 @@
 class ModelLoader
 {
 public:
-    static bool LoadModel(const std::string &filePath, std::vector<std::vector<VertexLayout>> &meshesVertices, std::vector<std::vector<unsigned int>> &meshesIndices, std::vector<MaterialDescriptor> &materials);
+    static bool LoadModel(const std::string &filePath, std::vector<MeshData> &meshes, std::vector<MaterialDescriptor> &materials);
 
 private:
-    static bool LoadSubmesh(FILE *file, std::vector<VertexLayout> &vertices, std::vector<unsigned int> &indices);
+    static bool LoadSubmesh(FILE *file, MeshData &mesh);
     static bool LoadMaterial(FILE *file, MaterialDescriptor &material);
 };

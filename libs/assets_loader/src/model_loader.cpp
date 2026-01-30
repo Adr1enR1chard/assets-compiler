@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-bool ModelLoader::LoadModel(const std::string &filePath, std::vector<std::vector<VertexLayout>> &meshesVertices, std::vector<std::vector<unsigned int>> &meshesIndices, std::vector<MaterialDescriptor> &materials)
+bool ModelLoader::LoadModel(const std::string &filePath, std::vector<MeshData> &meshes, std::vector<MaterialDescriptor> &materials)
 {
     std::string modelPath = filePath + ".asset";
     FILE *file = fopen(modelPath.c_str(), "rb");
@@ -24,20 +24,16 @@ bool ModelLoader::LoadModel(const std::string &filePath, std::vector<std::vector
         return false;
     }
 
-    meshesVertices.resize(header.meshCount);
-    meshesIndices.resize(header.meshCount);
-
+    meshes.resize(header.meshCount);
     for (uint32_t i = 0; i < header.meshCount; ++i)
     {
-        std::vector<VertexLayout> vertices;
-        std::vector<unsigned int> indices;
-        if (!LoadSubmesh(file, vertices, indices))
+        MeshData mesh;
+        if (!LoadSubmesh(file, mesh))
         {
             fclose(file);
             return false;
         }
-        meshesVertices[i] = vertices;
-        meshesIndices[i] = indices;
+        meshes[i] = mesh;
     }
 
     materials.resize(header.materialCount);
@@ -55,7 +51,7 @@ bool ModelLoader::LoadModel(const std::string &filePath, std::vector<std::vector
     return true;
 }
 
-bool ModelLoader::LoadSubmesh(FILE *file, std::vector<VertexLayout> &vertices, std::vector<unsigned int> &indices)
+bool ModelLoader::LoadSubmesh(FILE *file, MeshData &mesh)
 {
     MeshHeader header;
     fread(&header, sizeof(header), 1, file);
@@ -65,11 +61,12 @@ bool ModelLoader::LoadSubmesh(FILE *file, std::vector<VertexLayout> &vertices, s
         return false;
     }
 
-    vertices.resize(header.vertexCount);
-    indices.resize(header.indexCount);
+    mesh.vertices.resize(header.vertexCount);
+    mesh.indices.resize(header.indexCount);
 
-    fread(vertices.data(), sizeof(VertexLayout), header.vertexCount, file);
-    fread(indices.data(), sizeof(unsigned int), header.indexCount, file);
+    fread(mesh.vertices.data(), sizeof(VertexLayout), header.vertexCount, file);
+    fread(mesh.indices.data(), sizeof(unsigned int), header.indexCount, file);
+    mesh.localTransform = header.localTransform;
 
     return true;
 }

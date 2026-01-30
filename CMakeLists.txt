@@ -36,6 +36,9 @@ add_library(assets_format INTERFACE)
 target_include_directories(assets_format INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/formats/include
 )
+target_link_libraries(assets_format INTERFACE
+    thirdparty_glm
+)
 
 # Assets Loader (header-only)
 add_library(assets_loader 

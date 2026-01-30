@@ -42,23 +42,27 @@ int main()
 
     std::cout << "Testing model loading..." << std::endl;
     {
-        std::vector<std::vector<VertexLayout>> meshesVertices;
-        std::vector<std::vector<unsigned int>> meshesIndices;
+        std::vector<MeshData> meshes;
         std::vector<MaterialDescriptor> materials;
-        bool result = ModelLoader::LoadModel("assets/models/sword/scene.gltf", meshesVertices, meshesIndices, materials);
+        bool result = ModelLoader::LoadModel("assets/models/sword/scene.gltf", meshes, materials);
         if (!result)
         {
             std::cerr << "Failed to load model." << std::endl;
             return 1;
         }
-        if (meshesVertices.size() != 2 || meshesIndices.size() != 2)
+        if (meshes.size() != 2)
         {
-            std::cerr << "Model meshes count mismatch. Expected 2, got " << meshesVertices.size() << " and " << meshesIndices.size() << std::endl;
+            std::cerr << "Model meshes count mismatch. Expected 2, got " << meshes.size() << std::endl;
             return 1;
         }
-        if (meshesVertices[0].size() != 2369 || meshesIndices[0].size() != 9414)
+        if (meshes[0].vertices.size() != 2369 || meshes[0].indices.size() != 9414)
         {
             std::cerr << "First mesh data is empty." << std::endl;
+            return 1;
+        }
+        if (meshes[0].localTransform[0][0] == 0.0f)
+        {
+            std::cerr << "First mesh local transform mismatch. Found " << meshes[0].localTransform[0][0] << std::endl;
             return 1;
         }
         if (materials.size() != 2)

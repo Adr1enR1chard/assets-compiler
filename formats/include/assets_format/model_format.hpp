@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <string>
+#include <glm/glm.hpp>
+#include <vector>
 
 struct VertexLayout
 {
@@ -23,12 +25,20 @@ struct MaterialDescriptor
     bool useMetallicRoughnessTexture = false;
 };
 
+struct MeshData
+{
+    std::vector<VertexLayout> vertices;
+    std::vector<uint32_t> indices;
+    glm::mat4 localTransform;
+};
+
 struct MeshHeader
 {
     uint32_t magic; // 'MESH0'
     uint32_t vertexCount;
     uint32_t indexCount;
     uint32_t materialIndex;
+    glm::mat4 localTransform;
 };
 
 struct ModelHeader

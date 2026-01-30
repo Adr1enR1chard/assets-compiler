@@ -42,20 +42,19 @@ void CompileModel(const char *inputPath, FILE *outputFile)
     }
 
     int meshCounter = 0;
-    std::vector<std::vector<VertexLayout>> meshesVertices;
-    std::vector<std::vector<unsigned int>> meshesIndices;
+    std::vector<MeshData> meshes;
     std::vector<MaterialDescriptor> materials;
-    ProcessNode(scene->mRootNode, scene, glm::mat4(1.0f), outputFile, meshesVertices, meshesIndices, materials);
+    ProcessNode(scene->mRootNode, scene, glm::mat4(1.0f), outputFile, meshes, materials);
 
     ModelHeader header{
         0x4C444F4D, // 'MODL0'
-        static_cast<uint32_t>(meshesVertices.size()),
+        static_cast<uint32_t>(meshes.size()),
         static_cast<uint32_t>(materials.size())};
     fwrite(&header, sizeof(header), 1, outputFile);
 
-    for (size_t i = 0; i < meshesVertices.size(); i++)
+    for (size_t i = 0; i < meshes.size(); i++)
     {
-        CompileMesh(meshesVertices[i], meshesIndices[i], outputFile);
+        CompileMesh(meshes[i], outputFile);
     }
 
     for (size_t i = 0; i < materials.size(); i++)
@@ -64,16 +63,17 @@ void CompileModel(const char *inputPath, FILE *outputFile)
     }
 }
 
-void CompileMesh(std::vector<VertexLayout> &vertices, std::vector<unsigned int> &indices, FILE *outputFile)
+void CompileMesh(MeshData &meshData, FILE *outputFile)
 {
     MeshHeader header{
         0x4853454D, // 'MESH0'
-        static_cast<uint32_t>(vertices.size()),
-        static_cast<uint32_t>(indices.size())};
-
+        static_cast<uint32_t>(meshData.vertices.size()),
+        static_cast<uint32_t>(meshData.indices.size()),
+        0, // materialIndex to be set later,
+        meshData.localTransform};
     fwrite(&header, sizeof(header), 1, outputFile);
-    fwrite(vertices.data(), sizeof(VertexLayout), vertices.size(), outputFile);
-    fwrite(indices.data(), sizeof(unsigned int), indices.size(), outputFile);
+    fwrite(meshData.vertices.data(), sizeof(VertexLayout), meshData.vertices.size(), outputFile);
+    fwrite(meshData.indices.data(), sizeof(unsigned int), meshData.indices.size(), outputFile);
 }
 
 void CompileMaterial(MaterialDescriptor &outMaterial, FILE *outputFile)
@@ -82,7 +82,7 @@ void CompileMaterial(MaterialDescriptor &outMaterial, FILE *outputFile)
     fwrite(&outMaterial, sizeof(MaterialDescriptor), 1, outputFile);
 }
 
-void ProcessNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, FILE *outputFile, std::vector<std::vector<VertexLayout>> &meshesVertices, std::vector<std::vector<unsigned int>> &meshesIndices, std::vector<MaterialDescriptor> &materials)
+void ProcessNode(const aiNode *node, const aiScene *scene, const glm::mat4 &parentTransform, FILE *outputFile, std::vector<MeshData> &meshes, std::vector<MaterialDescriptor> &materials)
 {
     glm::mat4 nodeTransform = parentTransform * AiMatrixToGlmMat4(node->mTransformation);
 
@@ -90,17 +90,17 @@ void ProcessNode(const aiNode *node, const aiScene *scene, const glm::mat4 &pare
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
 
-        ProcessMesh(mesh, scene, nodeTransform, meshesVertices.emplace_back(), meshesIndices.emplace_back());
+        ProcessMesh(mesh, scene, nodeTransform, meshes.emplace_back());
         ProcessMaterial(scene->mMaterials[mesh->mMaterialIndex], materials.emplace_back());
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        ProcessNode(node->mChildren[i], scene, nodeTransform, outputFile, meshesVertices, meshesIndices, materials);
+        ProcessNode(node->mChildren[i], scene, nodeTransform, outputFile, meshes, materials);
     }
 }
 
-void ProcessMesh(const aiMesh *mesh, const aiScene *scene, const glm::mat4 &transform, std::vector<VertexLayout> &outVertices, std::vector<unsigned int> &outIndices)
+void ProcessMesh(const aiMesh *mesh, const aiScene *scene, const glm::mat4 &transform, MeshData &outMesh)
 {
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -128,15 +128,18 @@ void ProcessMesh(const aiMesh *mesh, const aiScene *scene, const glm::mat4 &tran
             vertex.texCoord[0] = mesh->mTextureCoords[0][i].x;
             vertex.texCoord[1] = mesh->mTextureCoords[0][i].y;
         }
-        outVertices.push_back(vertex);
+        outMesh.vertices.push_back(vertex);
     }
 
     for (unsigned int i = 0; i < mesh->mNumFaces; i++)
     {
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++)
-            outIndices.push_back(face.mIndices[j]);
+            outMesh.indices.push_back(face.mIndices[j]);
     }
+
+    glm::mat4 localTransform = glm::inverse(transform) * glm::mat4(1.0f);
+    outMesh.localTransform = localTransform;
 }
 
 void ProcessMaterial(const aiMaterial *material, MaterialDescriptor &outMaterial)
