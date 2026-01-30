@@ -109,8 +109,13 @@ if (PROJECT_IS_TOP_LEVEL)
     enable_testing()
 
     add_test(
-        NAME assets_compiler_test
-        COMMAND assets_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test "$<TARGET_FILE_DIR:assets_loader_test>/assets"
+        NAME textures_compiler_test
+        COMMAND assets_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test/textures/black1x1.png "$<TARGET_FILE_DIR:assets_loader_test>/assets"
+    )
+
+    add_test(
+        NAME models_compiler_test
+        COMMAND assets_compiler ${CMAKE_CURRENT_SOURCE_DIR}/test/models/sword/scene.gltf "$<TARGET_FILE_DIR:assets_loader_test>/assets"
     )
 
     add_test(
