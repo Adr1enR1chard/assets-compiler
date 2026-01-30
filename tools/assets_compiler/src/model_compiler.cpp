@@ -137,9 +137,7 @@ void ProcessMesh(const aiMesh *mesh, const aiScene *scene, const glm::mat4 &tran
         for (unsigned int j = 0; j < face.mNumIndices; j++)
             outMesh.indices.push_back(face.mIndices[j]);
     }
-
-    glm::mat4 localTransform = glm::inverse(transform) * glm::mat4(1.0f);
-    outMesh.localTransform = localTransform;
+    outMesh.localTransform = transform;
 }
 
 void ProcessMaterial(const aiMaterial *material, MaterialDescriptor &outMaterial)
