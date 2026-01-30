@@ -21,12 +21,6 @@ int main(int argc, char **argv)
     const char *sourceFile = argv[1];
     const char *destDir = argv[2];
 
-    std::cout << "Asset Compiler Tool" << std::endl;
-    std::cout << "Source File: " << sourceFile << std::endl;
-    std::cout << "Destination Directory: " << destDir << std::endl;
-    std::cout << "Starting asset processing..." << std::endl;
-
-    // if relative path, make absolute
     std::filesystem::path filePath = std::filesystem::absolute(sourceFile);
     std::filesystem::path destPath = std::filesystem::absolute(destDir);
 
@@ -39,17 +33,16 @@ int main(int argc, char **argv)
     // Process the single source file and save the optimized version to the destination directory
     if (std::filesystem::is_regular_file(filePath) && filePath.has_extension())
     {
+        std::filesystem::path relativePath = std::filesystem::relative(filePath, filePath.parent_path());
+        std::filesystem::path outputPath = destPath / relativePath;
+        std::filesystem::create_directories(outputPath.parent_path());
 
         AssetType assetType = GetAssetType(filePath);
         if (assetType == AssetType::Unknown)
         {
-            std::cout << "Unknown asset format, skipping file: " << filePath << std::endl;
+            std::filesystem::copy_file(filePath, outputPath, std::filesystem::copy_options::overwrite_existing);
             return 0;
         }
-
-        std::filesystem::path relativePath = std::filesystem::relative(filePath, filePath.parent_path());
-        std::filesystem::path outputPath = destPath / relativePath;
-        std::filesystem::create_directories(outputPath.parent_path());
 
         FILE *outputFile = fopen((outputPath.string() + ".asset").c_str(), "wb");
         if (!outputFile)
@@ -71,10 +64,6 @@ int main(int argc, char **argv)
         case AssetType::Model:
             CompileModel(filePath.string().c_str(), outputFile);
             std::cout << "Compiled model: " << filePath << " -> " << outputPath << std::endl;
-            break;
-
-        default:
-            std::cout << "Unsupported asset type for file: " << filePath << std::endl;
             break;
         }
 
