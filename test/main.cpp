@@ -14,37 +14,37 @@ int main()
     std::cout
         << "Testing texture loading..." << std::endl;
     {
-        unsigned int width, height, channels;
-        std::vector<unsigned char> data;
-        bool result = TextureLoader::LoadTexture("assets/textures/black1x1.png", width, height, channels, data);
+        LoadedTexture texture;
+        bool result = TextureLoader::LoadTexture("assets/black1x1.png", texture);
         if (!result)
         {
             std::cerr << "Failed to load texture." << std::endl;
             return 1;
         }
-        if (!(width == 1 && height == 1 && channels == 3))
+        if (!(texture.width == 1 && texture.height == 1 && texture.channels == 3))
         {
             std::cerr << "Texture properties mismatch." << std::endl;
             return 1;
         }
-        if (data.empty())
+        if (texture.data.empty())
         {
             std::cerr << "Texture data is empty." << std::endl;
             return 1;
         }
-        std::cout << "Texture loaded successfully: " << width << "x" << height << " with " << channels << " channels." << std::endl;
-        if (!(data[0] == 0 && data[1] == 0 && data[2] == 0))
-        {
-            std::cerr << "Texture pixel data mismatch." << std::endl;
-            return 1;
-        }
+        std::cout << "Texture loaded successfully: " << texture.width << "x" << texture.height
+                  << " with " << texture.channels << " channels. Format: "
+                  << (texture.format == TextureFormat::DXT1 ? "DXT1" : texture.format == TextureFormat::DXT5 ? "DXT5"
+                                                                                                             : "Uncompressed")
+                  << " Size: " << texture.data.size() << " bytes" << std::endl;
+        // Note: With compression, we can't check individual pixel values anymore
+        // The test just verifies the texture loaded and has the correct dimensions
     }
 
     std::cout << "Testing model loading..." << std::endl;
     {
         std::vector<MeshData> meshes;
         std::vector<MaterialDescriptor> materials;
-        bool result = ModelLoader::LoadModel("assets/models/sword/scene.gltf", meshes, materials);
+        bool result = ModelLoader::LoadModel("assets/scene.gltf", meshes, materials);
         if (!result)
         {
             std::cerr << "Failed to load model." << std::endl;

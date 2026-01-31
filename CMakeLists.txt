@@ -68,6 +68,16 @@ target_include_directories(thirdparty_stb
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party
 )
 
+# stb_dxt (texture compression)
+add_library(thirdparty_stb_dxt
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/stb_dxt/stb_dxt.cpp
+)
+
+target_include_directories(thirdparty_stb_dxt
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/third_party
+)
+
 ####################
 #### Executables
 ####################
@@ -82,6 +92,7 @@ target_link_libraries(assets_compiler
         assets_format
         thirdparty_glm
         thirdparty_stb
+        thirdparty_stb_dxt
         assimp::assimp
 )
 
@@ -121,6 +132,6 @@ if (PROJECT_IS_TOP_LEVEL)
     add_test(
         NAME assets_loader_test
         COMMAND assets_loader_test
-        WORKING_DIRECTORY $<TARGET_FILE_DIR:assets_loader_test>
+        WORKING_DIRECTORY "$<TARGET_FILE_DIR:assets_loader_test>"
     )
 endif()
